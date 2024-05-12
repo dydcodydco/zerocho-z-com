@@ -84,7 +84,7 @@ export default function SignupModal() {
 									placeholder=''
 									{...register('id', { required: '아이디를 입력해주세요.', minLength: { value: 3, message: '아이디 최소 3자리' } })}
 								/>
-								{errors.id && typeof errors.id.message === 'string' && <p>{errors.id.message}</p>}
+								{errors.id && <p>{errors.id.message}</p>}
 							</div>
 							<div className={style.inputDiv}>
 								<label className={style.inputLabel} htmlFor='nickname'>
@@ -97,7 +97,7 @@ export default function SignupModal() {
 									placeholder=''
 									{...register('nickname', { required: '닉네임을 입력해주세요', minLength: { value: 3, message: '닉네임 최소 3자리' } })}
 								/>
-								{errors.nickname && typeof errors.nickname.message === 'string' && <p>{errors.nickname.message}</p>}
+								{errors.nickname && <p>{errors.nickname.message}</p>}
 							</div>
 							<div className={style.inputDiv}>
 								<label className={style.inputLabel} htmlFor='password'>
@@ -110,7 +110,7 @@ export default function SignupModal() {
 									placeholder=''
 									{...register('password', { required: '비밀번호를 입력해주세요', minLength: { value: 3, message: '비밀번호 최소 3자리' } })}
 								/>
-								{errors.password && typeof errors.password.message === 'string' && <p>{errors.password.message}</p>}
+								{errors.password && <p>{errors.password.message}</p>}
 							</div>
 							<div className={style.inputDiv}>
 								<label className={style.inputLabel} htmlFor='image'>
@@ -126,7 +126,7 @@ export default function SignupModal() {
 										required: '프로필 이미지는 필수입니다.',
 									})}
 								/>
-								{errors.image && typeof errors.image.message === 'string' && <p>{errors.image.message}</p>}
+								{errors.image && <p>{errors.image.message}</p>}
 							</div>
 						</div>
 						<div className={style.modalFooter}>
