@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
-import style from '@/app/(afterLogin)/layout.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
+import style from '@/app/(afterLogin)/layout.module.scss';
 import ZLogo from '../../../public/zlogo.png';
 import NavMenu from '@/app/(afterLogin)/_component/NavMenu';
 import TrendSection from '@/app/(afterLogin)/_component/TrendSection';
 import FollowRecommend from '@/app/(afterLogin)/_component/FollowRecommend';
-import LogoutButton from '@/app/(afterLogin)/_component/LogOutButton';
+import LogoutButton from '@/app/(afterLogin)/_component/LogoutButton';
 
 export default function AfterLoginLayout({ children }: { children: ReactNode }) {
 	return (

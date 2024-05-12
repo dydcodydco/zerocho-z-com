@@ -12,16 +12,16 @@
 }
 
 .leftSection {
-	background-color: orange;
+	// background-color: orange;
 	width: 275px;
 	height: 100dvh;
 }
 
 .leftSectionFixed {
+	// background-color: palevioletred;
 	position: fixed;
 	width: inherit;
 	height: 100dvh;
-	background-color: palevioletred;
 	display: flex;
 	flex-direction: column;
 	nav {
@@ -79,7 +79,7 @@
 }
 
 .rightSectionInner {
-	background-color: pink;
+	// background-color: pink;
 	width: 990px;
 	height: 100%;
 	display: flex;
@@ -87,23 +87,23 @@
 }
 
 .main {
+	// background-color: papayawhip;
 	width: 600px;
-	background-color: papayawhip;
 	height: 300dvh;
 }
 
 .rightSection {
+	// background-color: paleturquoise;
 	width: 350px;
 	height: 100%;
-	background-color: paleturquoise;
 }
 
 .search {
+	background-color: rgba(239, 243, 244);
 	position: fixed;
 	height: 42px;
 	width: inherit;
 	border-radius: 21px;
-	background-color: rgba(239, 243, 244);
 	margin-top: 6px;
 	margin-bottom: 12px;
 	display: flex;
@@ -125,9 +125,9 @@
 }
 
 .followRecommend {
+	// background-color: rgb(247, 249, 249);
 	font-size: 20px;
 	font-weight: bold;
-	background-color: rgb(247, 249, 249);
 	border-radius: 16px;
 	margin: 12px 0;
 	padding: 12px 16px;
