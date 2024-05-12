@@ -5,14 +5,22 @@ import { useRouter } from 'next/navigation';
 import { ChangeEventHandler, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
+// 정확한 타입을 useForm에 명시
+interface FormValues {
+	id: string;
+	nickname: string;
+	password: string;
+	image: FileList;
+}
+
 export default function SignupModal() {
 	const [image, setImage] = useState('');
 	const [imageFile, setImageFile] = useState<File>();
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
-	} = useForm();
+		formState: { errors, isValid, isDirty },
+	} = useForm<FormValues>();
 
 	const router = useRouter();
 	const onClickClose = () => {
@@ -24,9 +32,9 @@ export default function SignupModal() {
 		e.target.files && setImageFile(e.target.files[0]);
 	};
 
-	const onSubmit: SubmitHandler<any> = (e) => {
-		console.log(e);
-		const { id, nickname, password, image } = e.target;
+	const onSubmit: SubmitHandler<FormValues> = (formValues) => {
+		console.log(formValues);
+		const { id, nickname, password, image } = formValues;
 		return;
 		// fetch('http://localhost:9090/api/users', {
 		// 	method: 'post',
@@ -122,7 +130,9 @@ export default function SignupModal() {
 							</div>
 						</div>
 						<div className={style.modalFooter}>
-							<button className={style.actionButton}>가입하기</button>
+							<button className={style.actionButton} disabled={!isDirty || !isValid}>
+								가입하기
+							</button>
 						</div>
 					</form>
 				</div>
