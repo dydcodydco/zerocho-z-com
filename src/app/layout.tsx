@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
 import './globals.css'; // 전체 공통 스타일
-import styles from './page.module.css'; // 특정 페이지용
+import styles from './page.module.scss'; // 특정 페이지용
 
 const inter = Inter({ subsets: ['latin'] });
 
