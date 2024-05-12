@@ -1,3 +1,3 @@
 export default function Page() {
-	return <main>검색 페이지</main>;
+	return <main>쪽지 페이지</main>;
 }
