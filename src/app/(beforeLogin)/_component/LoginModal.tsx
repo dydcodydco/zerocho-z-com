@@ -1,18 +1,24 @@
 'use client';
 
-import style from '@/app/(beforeLogin)/_component/login.module.css';
-import { useState } from 'react';
+import style from '@/app/(beforeLogin)/_component/login.module.scss';
+import { useRouter } from 'next/navigation';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export default function LoginModal() {
-	const [id, setId] = useState();
-	const [password, setPassword] = useState();
-	const [message, setMessage] = useState();
-	const onSubmit = () => {};
-	const onClickClose = () => {};
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm();
+	const router = useRouter();
+	const onClickClose = () => {
+		router.back();
+		// TODO: 뒤로가기가 /home이 아니면 /home으로 보내기
+	};
 
-	const onChangeId = () => {};
-
-	const onChangePassword = () => {};
+	const onSubmit: SubmitHandler<any> = (data) => {
+		console.log(data);
+	};
 
 	return (
 		<div className={style.modalBackground}>
@@ -27,26 +33,25 @@ export default function LoginModal() {
 					</button>
 					<div>로그인하세요.</div>
 				</div>
-				<form onSubmit={onSubmit}>
+				<form onSubmit={handleSubmit(onSubmit)}>
 					<div className={style.modalBody}>
 						<div className={style.inputDiv}>
 							<label className={style.inputLabel} htmlFor='id'>
 								아이디
 							</label>
-							<input id='id' className={style.input} value={id} onChange={onChangeId} type='text' placeholder='' />
+							<input id='id' className={style.input} type='text' placeholder='' {...register('id', { required: '아이디를 입력해주세요.' })} />
+							{errors.id?.message && typeof errors.id.message === 'string' && <p>{errors.id.message}</p>}
 						</div>
 						<div className={style.inputDiv}>
 							<label className={style.inputLabel} htmlFor='password'>
 								비밀번호
 							</label>
-							<input id='password' className={style.input} value={password} onChange={onChangePassword} type='password' placeholder='' />
+							<input id='password' className={style.input} type='password' placeholder='' {...register('password', { required: '비밀번호를 입력해주세요.' })} />
+							{errors.password?.message && typeof errors.password.message === 'string' && <p>{errors.password.message}</p>}
 						</div>
 					</div>
-					<div className={style.message}>{message}</div>
 					<div className={style.modalFooter}>
-						<button className={style.actionButton} disabled={!id && !password}>
-							로그인하기
-						</button>
+						<button className={style.actionButton}>로그인하기</button>
 					</div>
 				</form>
 			</div>

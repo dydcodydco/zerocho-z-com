@@ -27,12 +27,12 @@
 	display: flex;
 	flex-direction: column;
 	height: 450px;
-}
 
-.modalHeader {
-	padding: 36px 80px 20px;
-	font-size: 31px;
-	font-weight: bold;
+	.modalHeader {
+		padding: 36px 80px 20px;
+		font-size: 31px;
+		font-weight: bold;
+	}
 }
 
 .modal form {
