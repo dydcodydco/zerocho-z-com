@@ -6,7 +6,7 @@ import style from './navMenu.module.scss';
 
 export default function NavMenu() {
 	const segment = useSelectedLayoutSegment(); // app route 폴더 기준
-	console.log(segment);
+	console.log('useSelectedLayoutSegment =', segment);
 	const me = {
 		id: 'zzimzzim',
 		// 임시로 내 정보 있는 것처럼
