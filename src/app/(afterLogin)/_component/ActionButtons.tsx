@@ -22,7 +22,7 @@ export default function ActionButtons({white}: Props) {
   const onClickHeart = useCallback(() => {
     
   }, []);
-  console.log(white);
+  // console.log(white);
   return (
     <div className={style.actionButtons}>
       <div className={cx(style.commentButton, commented && style.commented, white && style.white)}>

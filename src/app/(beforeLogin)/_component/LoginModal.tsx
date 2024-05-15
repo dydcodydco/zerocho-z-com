@@ -3,21 +3,34 @@
 import style from '@/app/(beforeLogin)/_component/login.module.scss';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
+// import { signIn } from '@/auth'; // 서버환경일 때
+import { signIn } from 'next-auth/react'; // 클라이언트일 때
+
+type formProps = {
+	id: string, password: string,
+}
 
 export default function LoginModal() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm();
+	} = useForm<formProps>();
 	const router = useRouter();
 	const onClickClose = () => {
 		router.back();
 		// TODO: 뒤로가기가 /home이 아니면 /home으로 보내기
 	};
 
-	const onSubmit: SubmitHandler<any> = (data) => {
+	const onSubmit: SubmitHandler<formProps> = async (data: formProps) => {
 		console.log(data);
+		try {
+			await signIn('credentials', { ...data, redirect: false });
+			router.replace('/home');
+		} catch(error) {
+			console.error(error);
+			console.log('아이디와 비밀번호가 일치히자 않습니다.');
+		}
 	};
 
 	return (
