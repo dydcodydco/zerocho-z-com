@@ -1,5 +1,6 @@
 'use server';
 
+import { signIn } from '@/auth';
 import { redirect } from 'next/navigation';
 
 const onSubmit = async (prevState: any, formData: FormData) => {
@@ -18,6 +19,7 @@ const onSubmit = async (prevState: any, formData: FormData) => {
 
   let shouldRedirect = false;
   try {
+    console.log('-------------------------signup start');
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, {
       method: 'post',
       body: formData,
@@ -28,8 +30,15 @@ const onSubmit = async (prevState: any, formData: FormData) => {
     if (response.status === 403) {
       return { message: 'user_exists' };
     }
-    console.log(await response.json());
+    const user = await response.json();
+    console.log(user, '-------------------------signup');
     shouldRedirect = true;
+    // 회원가입 성공하고 로그인 시도
+    await signIn("credentials", {
+      username: formData.get('id'),
+      password: formData.get('password'),
+      redirect: false,
+    })
   } catch (error) {
     console.error(error);
     return { message: null };

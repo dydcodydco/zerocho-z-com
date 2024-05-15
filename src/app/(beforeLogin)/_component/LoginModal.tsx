@@ -11,11 +11,7 @@ type formProps = {
 }
 
 export default function LoginModal() {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<formProps>();
+	const { register, handleSubmit, formState: { errors } } = useForm<formProps>();
 	const router = useRouter();
 	const onClickClose = () => {
 		router.back();

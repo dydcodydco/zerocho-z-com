@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 // import CredentialsProvider from "next-auth/providers/credentials"
 import Credentials from "next-auth/providers/credentials"
+import { NextResponse } from 'next/server';
 
 export const {
   // api 라우트
@@ -14,6 +15,16 @@ export const {
     signIn: "/i/flow/login",
     newUser: '/i/flow/signup',
   },
+  // callbacks: {
+  //   // 로그인 필요한 페이지에서 로그인 안돼어있으면 막기
+  //   async authorized({ auth }) {
+  //     if (!auth) {
+  //       return NextResponse.redirect('http://localhost:3001/i/flow/login');
+  //     }
+  //     return true;
+  //   }
+  // },
+  
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -43,7 +54,11 @@ export const {
         console.log('user', user);
  
         // return user object with the their profile data
-        return user
+        return {
+          ...user,
+          name: user.nickname,
+          email: user.id,
+        }
       },
     }),
   ]
