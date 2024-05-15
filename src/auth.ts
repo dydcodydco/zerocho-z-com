@@ -1,4 +1,4 @@
-import NextAuth from "next-auth"
+import NextAuth, {CredentialsSignin} from "next-auth"
 // import CredentialsProvider from "next-auth/providers/credentials"
 import Credentials from "next-auth/providers/credentials"
 import { NextResponse } from 'next/server';
@@ -42,13 +42,19 @@ export const {
           },
           body: JSON.stringify(credentials)
         })
-        
-        // console.log('authResponse-----------------------------------', authResponse);
-        // 로그인 실패
-        if (!authResponse.ok) {
-          return null
-        }
 
+        // 여기 주목!!! 서버에서 에러가 발생할 때 그 에러 내용이 서버에 담겨 있을 겁니다.
+        console.log(authResponse.status, authResponse.statusText)
+        if (!authResponse.ok) {
+          const credentialsSignin = new CredentialsSignin();
+          if (authResponse.status === 404) {
+            credentialsSignin.code = 'no_user';
+          } else if (authResponse.status === 401) {
+            credentialsSignin.code = 'wrong_password';
+          }
+          throw credentialsSignin;
+        }
+      
         // 로그인 성공
         const user = await authResponse.json();
         console.log('user', user);
