@@ -4,29 +4,31 @@ import { useCallback } from 'react';
 import style from './logoutButton.module.scss';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { SessionUser } from '@/models/User';
 
-export default function LogoutButton() {
+export default function LogoutButton({user}: {user?: any}) {
 	const router = useRouter();
-	const { data: me } = useSession();
+	const { data } = useSession();
+	
+	const me = data?.user || user;
 
 	const onLogout = useCallback(async () => {
 		await signOut({ redirect: false });
 		router.replace('/');
 	}, [router]);
 
-	console.log(me, '-------------------------logout button');
-	if (!me?.user) {
+	if (!data?.user && !user) {
 		return null;
 	}
 
 	return (
 		<button className={style.logOutButton} onClick={onLogout}>
       <div className={style.logOutUserImage}>
-				<img src={me.user?.image!} alt={me.user?.email!}/>
+				<img src={me?.image!} alt={me?.email!}/>
       </div>
       <div className={style.logOutUserName}>
-        <div>{me.user?.name}</div>
-        <div>@{me.user?.email}</div>
+        <div>{me?.name}</div>
+        <div>@{me?.email}</div>
       </div>
     </button>
 	);
