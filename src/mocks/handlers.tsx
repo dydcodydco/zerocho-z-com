@@ -2,7 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 export const handlers = [
   http.post('/api/login', () => {
-    console.log('----------------------------------/api/login');
+    console.log('----------------------------------로그인 /api/login');
     return HttpResponse.json(
       {
         userId: 1,
@@ -18,6 +18,7 @@ export const handlers = [
       }) 
   }),
   http.post('/api/logout', () => {
+    console.log('----------------------------------로그아웃 /api/logout');
     return new HttpResponse(null, {
       headers: {
         // http해더로 쿠키 지우는 방법
@@ -26,7 +27,7 @@ export const handlers = [
     })
   }),
   http.post('/api/users', async ({ request }) => {
-    console.log('회원가입');
+    console.log('----------------------------------회원가입 /api/users');
     // return HttpResponse.text(JSON.stringify('user_exists'), {
     //   status: 403,
     // })

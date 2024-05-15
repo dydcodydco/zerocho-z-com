@@ -24,7 +24,15 @@ export const {
   //     return true;
   //   }
   // },
-  
+  // callbacks: {
+    // async session({ session, token }) {
+    //   console.log('session callback', session, token);
+    //   const authResponse = await fetch('내정보를 가져오는 서버 API');
+    //   const userData = await authResponse.json();
+    //   (session as any).userData = userData;
+    //   return session;
+    // }
+  // },
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -44,7 +52,7 @@ export const {
         })
 
         // 여기 주목!!! 서버에서 에러가 발생할 때 그 에러 내용이 서버에 담겨 있을 겁니다.
-        console.log(authResponse.status, authResponse.statusText)
+        console.log(authResponse.ok, authResponse.status, authResponse.statusText)
         if (!authResponse.ok) {
           const credentialsSignin = new CredentialsSignin();
           if (authResponse.status === 404) {

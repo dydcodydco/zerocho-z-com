@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 // 미들웨어 본연 기능 사용
 export async function middleware() {
   const session = await auth();
+  console.log(session, '------------------------------middleware session')
   if (!session) {
     return NextResponse.redirect('http://localhost:3001/i/flow/login');
   }

@@ -37,7 +37,7 @@ const onSubmit = async (prevState: any, formData: FormData) => {
     await signIn("credentials", {
       username: formData.get('id'),
       password: formData.get('password'),
-      redirect: true,
+      redirect: false,
     })
   } catch (error) {
     console.error(error);

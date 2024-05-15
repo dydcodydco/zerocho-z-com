@@ -21,7 +21,7 @@ export default function LoginModal() {
 	const onSubmit: SubmitHandler<formProps> = async (data: formProps) => {
 		console.log(data);
 		try {
-			await signIn('credentials', { ...data, redirect: true });
+			await signIn('credentials', { ...data, redirect: false });
 			router.replace('/home');
 		} catch(error) {
 			console.error(error);
