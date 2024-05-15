@@ -2,37 +2,22 @@ import style from './post.module.scss';
 import Link from "next/link";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import ActionButtons from "@/app/(afterLogin)/_component/ActionButtons";
-import PostArticle from '@/app/(afterLogin)/_component/PostArticle';
 import 'dayjs/locale/ko';
-import {faker} from '@faker-js/faker';
-import PostImages from './PostImages';
+import ActionButtons from "@/app/(afterLogin)/_component/ActionButtons";
+import PostArticle from "@/app/(afterLogin)/_component/PostArticle";
+import PostImages from "@/app/(afterLogin)/_component/PostImages";
+import {Post as IPost} from "@/models/Post";
 
 dayjs.locale('ko');
 dayjs.extend(relativeTime)
 
 type Props = {
   noImage?: boolean
+  post: IPost
 }
+export default function Post({ noImage, post }: Props) {
+  const target = post;
 
-export default function Post({noImage}: Props) {
-  const target = {
-    postId: 1,
-    User: {
-      id: 'elonmusk',
-      nickname: 'Elon Musk',
-      image: '/yRsRRjGO.jpg',
-    },
-    content: '클론코딩 라이브로 하니 너무 힘들어요 ㅠㅠ',
-    createdAt: new Date(),
-    Images: [] as any, // 나중에 수정 필요
-  }
-  if (Math.random() > 0.5 && !noImage) {
-    target.Images.push({ imageId: 1, link: faker.image.urlLoremFlickr() });
-    target.Images.push({ imageId: 1, link: faker.image.urlLoremFlickr() });
-    target.Images.push({ imageId: 1, link: faker.image.urlLoremFlickr() });
-    // target.Images.push({ imageId: 1, link: faker.image.urlLoremFlickr() });
-  }
   return (
     <PostArticle post={target}>
       <div className={style.postWrapper}>
@@ -55,10 +40,10 @@ export default function Post({noImage}: Props) {
             <span className={style.postDate}>{dayjs(target.createdAt).fromNow(true)}</span>
           </div>
           <div>{target.content}</div>
-          <div className={style.postImageSection}>
+          {!noImage && <div>
             <PostImages post={target} />
-          </div>
-          <ActionButtons />
+          </div>}
+          <ActionButtons/>
         </div>
       </div>
     </PostArticle>

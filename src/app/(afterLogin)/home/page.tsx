@@ -1,29 +1,11 @@
-import { useContext } from 'react';
 import style from './home.module.scss'
 import Tab from "@/app/(afterLogin)/home/_component/Tab";
 import TabProvider from "@/app/(afterLogin)/home/_component/TabProvider";
 import PostForm from "@/app/(afterLogin)/home/_component/PostForm";
-import Post from "@/app/(afterLogin)/_component/Post";
+import PostRecommends from "@/app/(afterLogin)/_component/PostRecommends";
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-
 // 서버에서 실행
-async function getPostRecommend() {
-  const res = await fetch('http://localhost:9090/api/postRecommends', {
-    next: {
-      // 데이터를 업데이트할 때 필요한 태그만 revalidate는 관련된거 전체
-      tags: ['posts', 'recommends'],
-    },
-    // 캐싱 안하는 값, 너무 캐싱이 강하면 데이터를 새로 불러오지 못한다.
-    cache: 'no-store',
-  })
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
-  }
-
-  // 받아온 데이터 자동 저장 (서버에서 캐싱한다)
-  return res.json();
-}
+import { getPostRecommend } from '@/app/(afterLogin)/_lib/getPostRecommends';
 
 export default async function Home() {
   // const {tab, setTab} = useContext(TabContext);
@@ -43,17 +25,7 @@ export default async function Home() {
         <TabProvider>
           <Tab />
           <PostForm />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
+          <PostRecommends />
         </TabProvider>
       </HydrationBoundary>
     </main>
