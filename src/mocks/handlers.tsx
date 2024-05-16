@@ -227,8 +227,13 @@ export const handlers = [
     );
   }),
   // 특정 사용자의 정보
-  http.get('/api/users/:userId', ({request, params}) => {
-    return HttpResponse.json(User[0]);
+  http.get('/api/users/:userId', ({ request, params }) => {
+    const { userId } = params;
+    const found = User.find(v => v.id === userId);
+    if (found) {
+      return HttpResponse.json(found);
+    }
+    return HttpResponse.json({ message: 'no_such_user' }, {status: 404});    
   }),
   // 특정 사용자의 게시글들
   http.get('/api/users/:userId/posts', async ({ request, params }) => {
