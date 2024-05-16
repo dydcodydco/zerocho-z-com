@@ -3,13 +3,17 @@
 import {useCallback, useRef} from "react";
 import style from './commentForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 
 type FormProps = {
   content: string,
   imageFile: FileList,
 }
 
-export default function CommentForm() {
+export default function CommentForm({id}: {id: string}) {
+  const queryClient = useQueryClient();
+  console.log(id, '---------------------id');
+  const post = queryClient.getQueryData(['posts', id]);
   const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormProps>();
   const { ref, ...rest } = register('imageFile');
   const imageFileRef = useRef<HTMLInputElement | null>(null);
@@ -24,6 +28,7 @@ export default function CommentForm() {
     image: '/5Udwvqim.jpg'
   };
 
+  if (!post) return null;
   return (
     <form className={style.postForm} onSubmit={handleSubmit(onSubmit)}>
       <div className={style.postUserSection}>

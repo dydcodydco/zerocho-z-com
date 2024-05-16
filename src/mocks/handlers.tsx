@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { HttpResponse, delay, http } from 'msw';
+import { HttpResponse, StrictResponse, delay, http } from 'msw';
 
 faker.seed(123);
 
@@ -227,18 +227,18 @@ export const handlers = [
     );
   }),
   // 특정 사용자의 정보
-  http.get('/api/users/:userId', ({ request, params }) => {
+  http.get('/api/users/:userId', ({ request, params }): StrictResponse<any> => {
     const { userId } = params;
     const found = User.find(v => v.id === userId);
     if (found) {
       return HttpResponse.json(found);
     }
-    return HttpResponse.json({ message: 'no_such_user' }, {status: 404});    
+    return HttpResponse.json({ message: 'no_such_user' }, { status: 404 });
   }),
   // 특정 사용자의 게시글들
   http.get('/api/users/:userId/posts', async ({ request, params }) => {
     console.log('----------------------------------handlers /api/users/:userId/posts');
-    const {userId} = params;
+    const { userId } = params;
     await delay(3000);
     return HttpResponse.json(
       [
@@ -246,7 +246,7 @@ export const handlers = [
           postId: 1,
           User: User[0],
           content: `${userId}의 게시글 입니다.`,
-          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          Images: [{ imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) }],
           createdAt: generateDate(),
         },
         {
@@ -254,8 +254,8 @@ export const handlers = [
           User: User[0],
           content: `${userId}의 게시글 입니다.`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -271,10 +271,10 @@ export const handlers = [
           User: User[0],
           content: `${userId}의 게시글 입니다.`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -283,90 +283,55 @@ export const handlers = [
           User: User[0],
           content: `${userId}의 게시글 입니다.`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
       ]
     );
   }),
-  // 특정 사용자의 특정 게시글 하나
-  http.get('/api/users/:userId/posts/:postId', async ({ request, params }) => {
-    console.log('----------------------------------handlers /api/users/:userId/posts/:postId/comments');
-    const {userId, postId} = params;
-    await delay(3000);
+  // 특정 게시글 하나
+  http.get('/api/posts/:postId', ({ request, params }): StrictResponse<any> => {
+    const {postId} = params;
+    if (parseInt(postId as string) > 10) {
+      return HttpResponse.json({ message: 'no_such_post' }, {
+        status: 404,
+      })
+    }
     return HttpResponse.json(
-      [
-        {
-          postId: 1,
-          User: User[0],
-          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
-          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
-          createdAt: generateDate(),
-        },
-        {
-          postId: 2,
-          User: User[0],
-          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
-          Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-          ],
-          createdAt: generateDate(),
-        },
-        {
-          postId: 3,
-          User: User[0],
-          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
-          Images: [],
-          createdAt: generateDate(),
-        },
-        {
-          postId: 4,
-          User: User[0],
-          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
-          Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-          ],
-          createdAt: generateDate(),
-        },
-        {
-          postId: 5,
-          User: User[0],
-          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
-          Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-          ],
-          createdAt: generateDate(),
-        },
-      ]
+      {
+        postId,
+        User: User[0],
+        content: `${1} 게시글 아이디 ${postId}의 내용`,
+        Images: [
+          {imageId: 1, link: faker.image.urlLoremFlickr()},
+          {imageId: 2, link: faker.image.urlLoremFlickr()},
+          {imageId: 3, link: faker.image.urlLoremFlickr()},
+        ],
+        createdAt: generateDate(),
+      },
     );
   }),
   // 특정 사용자의 특정 게시글 하나의 답글들
-  http.get('/api/users/:userId/posts/:postId/comments', async ({ request, params }) => {
+  http.get('/api/posts/:postId/comments', async ({ request, params }) => {
     console.log('----------------------------------handlers /api/users/:userId/posts/:postId/comments');
-    const {userId, postId} = params;
+    const {postId} = params;
     await delay(3000);
     return HttpResponse.json(
       [
         {
           postId: 1,
           User: User[0],
-          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          content: `${postId}의 답글 입니다.`,
           Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
           createdAt: generateDate(),
         },
         {
           postId: 2,
           User: User[0],
-          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          content: `${postId}의 답글 입니다.`,
           Images: [
             {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
@@ -376,14 +341,14 @@ export const handlers = [
         {
           postId: 3,
           User: User[0],
-          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          content: `${postId}의 답글 입니다.`,
           Images: [],
           createdAt: generateDate(),
         },
         {
           postId: 4,
           User: User[0],
-          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          content: `${postId}의 답글 입니다.`,
           Images: [
             {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
@@ -395,7 +360,7 @@ export const handlers = [
         {
           postId: 5,
           User: User[0],
-          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          content: `${postId}의 답글 입니다.`,
           Images: [
             {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
