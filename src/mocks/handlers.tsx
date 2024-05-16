@@ -113,4 +113,117 @@ export const handlers = [
       ]
     );
   }),
+  http.get('/api/followingPosts', async ({ request }) => {
+    console.log('----------------------------------handlers /api/followingPosts');
+    await delay(3000);
+    const url = new URL(request.url)
+    const cursor = parseInt(url.searchParams.get('cursor') as string) || 0;
+    return HttpResponse.json(
+      [
+        {
+          postId: cursor + 1,
+          User: User[0],
+          content: `${cursor + 1} followingPosts ${faker.lorem.paragraph()}`,
+          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          createdAt: generateDate(),
+        },
+        {
+          postId: cursor + 2,
+          User: User[0],
+          content: `${cursor + 2} followingPosts ${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: cursor + 3,
+          User: User[0],
+          content: `${cursor + 3} followingPosts ${faker.lorem.paragraph()}`,
+          Images: [],
+          createdAt: generateDate(),
+        },
+        {
+          postId: cursor + 4,
+          User: User[0],
+          content: `${cursor + 4} followingPosts ${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: cursor + 5,
+          User: User[0],
+          content: `${cursor + 5} followingPosts ${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+      ]
+    );
+  }),
+  http.get('/api/search/:tag', async ({ request, params }) => {
+    console.log('----------------------------------handlers /api/search');
+    const {tag} = params;
+    await delay(3000);
+    return HttpResponse.json(
+      [
+        {
+          postId: 1,
+          User: User[0],
+          content: `검색 결과 ${tag}`,
+          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: User[0],
+          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: User[0],
+          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          Images: [],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: User[0],
+          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: User[0],
+          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+      ]
+    );
+  }),
 ]
