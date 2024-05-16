@@ -9,15 +9,21 @@ import { Post as IPost } from '@/models/Post';
 
 export default function PostRecommends() {
   const { data } = useQuery<IPost[]>({
+    // 쿼리 키
     queryKey: ['posts', 'recommends'],
     queryFn: getPostRecommend,
     // fresh -> stale 가는 시간
-    // 60000 -> 1분동안 fresh
-    // infinity -> 항상 새롭다
+    // 60000 -> 1분동안 fresh, 즉 1분뒤에 stale로 바뀐다.
+    // staleTime: infinity -> 항상 fresh
     staleTime: 60 * 1000,
     // garvage collector time 기본 5분
-    // inactive = 사용자가 보는화면 어떤 api안쓰면 
+    // inactive = 사용자가 보는화면서 해당 데이터를 쓰고 있냐 안쓰고있냐?
+    // 예: 홈에서는 post recommend쓰는데 검색페이지에선 안쓴다 그럼 inactiv상태
+    // inactive상태일때 gcTime이 돌아간다.
+    // 이는 데이터가 많으면 터질수가 있다.인액티브 데이터들 5분뒤면 사라지게 만든다.
+    // 시간안에는 캐시에서 가져오고, 지나면 새로 불러온다.
     gcTime: 300 * 100,
+    // 일반적으로 staleTime을 gcTime보다 짧게 해야한다.  무조건 staleTime < gcTime!!
   })
   return (
     data?.map((post: IPost) => (

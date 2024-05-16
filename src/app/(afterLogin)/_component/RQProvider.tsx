@@ -12,11 +12,12 @@ export default function RQProvider({ children }: Props) {
   const [client] = useState(
     new QueryClient({
       defaultOptions: { // react-query 전역 설정
+        // 쿼리 옵션
         queries: {
-          refetchOnWindowFocus: false,
           retry: false,
           retryOnMount: true,
           refetchOnReconnect: false,
+          refetchOnWindowFocus: false,
         }
       }
     })

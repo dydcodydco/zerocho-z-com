@@ -16,6 +16,7 @@ type Props = {
   post: IPost
 }
 export default function Post({ noImage, post }: Props) {
+  // console.log(post);
   const target = post;
 
   return (
