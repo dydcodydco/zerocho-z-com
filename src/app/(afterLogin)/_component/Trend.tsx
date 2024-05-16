@@ -1,12 +1,17 @@
 import Link from 'next/link';
 import style from './trend.module.scss';
+import { Hashtag } from '@/models/Hashtag';
 
-export default function Trend() {
+type Props = {
+  trend: Hashtag
+}
+
+export default function Trend({trend}: Props) {
   return (
-    <Link href={'/search?q=트렌드'} className={style.container}>
-      <div className={style.count}>실시간 트렌드</div>
-      <div className={style.title}>찜찜</div>
-      <div className={style.count}>1, 234</div>
+    <Link href={`/search?q=${trend.title}`} className={style.container}>
+      <div className={style.count}>{trend.tagId}</div>
+      <div className={style.title}>{trend.title}</div>
+      <div className={style.count}>{trend.count.toLocaleString()}</div>
     </Link>
   );
 }

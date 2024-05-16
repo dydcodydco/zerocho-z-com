@@ -67,7 +67,7 @@ export const handlers = [
           postId: cursor + 1,
           User: User[0],
           content: `${cursor + 1} ${faker.lorem.paragraph()}`,
-          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          Images: [{ imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) }],
           createdAt: generateDate(),
         },
         {
@@ -75,8 +75,8 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 2} ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -92,10 +92,10 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 4} ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -104,9 +104,9 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 5} ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -124,7 +124,7 @@ export const handlers = [
           postId: cursor + 1,
           User: User[0],
           content: `${cursor + 1} followingPosts ${faker.lorem.paragraph()}`,
-          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          Images: [{ imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) }],
           createdAt: generateDate(),
         },
         {
@@ -132,8 +132,8 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 2} followingPosts ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -149,10 +149,10 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 4} followingPosts ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -161,9 +161,9 @@ export const handlers = [
           User: User[0],
           content: `${cursor + 5} followingPosts ${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -172,7 +172,7 @@ export const handlers = [
   }),
   http.get('/api/search/:tag', async ({ request, params }) => {
     console.log('----------------------------------handlers /api/search');
-    const {tag} = params;
+    const { tag } = params;
     await delay(3000);
     return HttpResponse.json(
       [
@@ -180,7 +180,7 @@ export const handlers = [
           postId: 1,
           User: User[0],
           content: `검색 결과 ${tag}`,
-          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          Images: [{ imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) }],
           createdAt: generateDate(),
         },
         {
@@ -188,8 +188,8 @@ export const handlers = [
           User: User[0],
           content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
           Images: [
-            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
-            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
           ],
           createdAt: generateDate(),
         },
@@ -205,6 +205,67 @@ export const handlers = [
           User: User[0],
           content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
           Images: [
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: User[0],
+          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          Images: [
+            { imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+            { imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' }) },
+          ],
+          createdAt: generateDate(),
+        },
+      ]
+    );
+  }),
+  // 특정 사용자의 정보
+  http.get('/api/users/:userId', ({request, params}) => {
+    return HttpResponse.json(User[0]);
+  }),
+  // 특정 사용자의 게시글들
+  http.get('/api/users/:userId/posts', async ({ request, params }) => {
+    console.log('----------------------------------handlers /api/users/:userId/posts');
+    const {userId} = params;
+    await delay(3000);
+    return HttpResponse.json(
+      [
+        {
+          postId: 1,
+          User: User[0],
+          content: `${userId}의 게시글 입니다.`,
+          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: User[0],
+          content: `${userId}의 게시글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: User[0],
+          content: `${userId}의 게시글 입니다.`,
+          Images: [],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: User[0],
+          content: `${userId}의 게시글 입니다.`,
+          Images: [
             {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
@@ -215,7 +276,7 @@ export const handlers = [
         {
           postId: 5,
           User: User[0],
-          content: `검색 결과 ${tag} **${faker.lorem.paragraph()}`,
+          content: `${userId}의 게시글 입니다.`,
           Images: [
             {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
             {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
@@ -226,4 +287,136 @@ export const handlers = [
       ]
     );
   }),
+  // 특정 사용자의 특정 게시글 하나
+  http.get('/api/users/:userId/posts/:postId', async ({ request, params }) => {
+    console.log('----------------------------------handlers /api/users/:userId/posts/:postId/comments');
+    const {userId, postId} = params;
+    await delay(3000);
+    return HttpResponse.json(
+      [
+        {
+          postId: 1,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
+          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
+          Images: [],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId} 게시글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+      ]
+    );
+  }),
+  // 특정 사용자의 특정 게시글 하나의 답글들
+  http.get('/api/users/:userId/posts/:postId/comments', async ({ request, params }) => {
+    console.log('----------------------------------handlers /api/users/:userId/posts/:postId/comments');
+    const {userId, postId} = params;
+    await delay(3000);
+    return HttpResponse.json(
+      [
+        {
+          postId: 1,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          Images: [{imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })}],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 2,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 3,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          Images: [],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 4,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 4, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+        {
+          postId: 5,
+          User: User[0],
+          content: `${userId}의 게시글 ${postId}의 답글 입니다.`,
+          Images: [
+            {imageId: 1, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 2, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+            {imageId: 3, link: faker.image.urlLoremFlickr({ category: 'animals' })},
+          ],
+          createdAt: generateDate(),
+        },
+      ]
+    );
+  }),
+  // 팔로우 추천
+  http.get('/api/followRecommends', async ({ request, params }) => {
+    return HttpResponse.json(User);
+  }),
+  // 트렌드 정보
+  http.get('/api/trends', async ({request, params}) => {
+    return HttpResponse.json([
+      {tagId: 1, title: '제로초', count: 1264},
+      {tagId: 2, title: '원초', count: 1264},
+      {tagId: 3, title: '투초', count: 1264},
+      {tagId: 4, title: '쓰리초', count: 1264},
+      {tagId: 5, title: '포초', count: 1264},
+      {tagId: 6, title: '파이브초', count: 1264},
+      {tagId: 7, title: '식스초', count: 1264},
+      {tagId: 8, title: '세븐초', count: 1264},
+      {tagId: 9, title: '나인초', count: 1264},
+    ]);
+  })
 ]

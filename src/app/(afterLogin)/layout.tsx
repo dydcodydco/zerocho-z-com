@@ -5,11 +5,11 @@ import style from '@/app/(afterLogin)/layout.module.scss';
 import ZLogo from '../../../public/zlogo.png';
 import NavMenu from '@/app/(afterLogin)/_component/NavMenu';
 import TrendSection from '@/app/(afterLogin)/_component/TrendSection';
-import FollowRecommend from '@/app/(afterLogin)/_component/FollowRecommend';
 import LogoutButton from '@/app/(afterLogin)/_component/LogoutButton';
 import RightSearchZone from '@/app/(afterLogin)/_component/RightSearchZone';
 import { auth } from '@/auth';
 import RQProvider from '@/app/(afterLogin)/_component/RQProvider';
+import FollowRecommendSection from '@/app/(afterLogin)/_component/FollowRecommendSection';
 
 type Props = { children: ReactNode, modal: ReactNode }
 
@@ -49,9 +49,7 @@ export default async function AfterLoginLayout({ children, modal }: Props) {
 							<TrendSection />
 							<div className={style.followRecommend}>
 								<h3>팔로우 추천</h3>
-								<FollowRecommend />
-								<FollowRecommend />
-								<FollowRecommend />
+								<FollowRecommendSection />
 							</div>
 						</section>
 					</div>
