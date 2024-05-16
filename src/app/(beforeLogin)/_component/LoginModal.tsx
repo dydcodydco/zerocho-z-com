@@ -21,8 +21,8 @@ export default function LoginModal() {
 	const onSubmit: SubmitHandler<formProps> = async (data: formProps) => {
 		console.log(data);
 		try {
-			await signIn('credentials', { ...data, redirect: false });
-			router.replace('/home');
+			await signIn('credentials', { ...data, redirect: true, callbackUrl: '/home' });
+			// router.replace('/home');
 		} catch(error) {
 			console.error(error);
 			console.log('아이디와 비밀번호가 일치히자 않습니다.');
