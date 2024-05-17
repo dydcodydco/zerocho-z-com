@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import style from './modal.module.scss';
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 type FormProps = {
   content: string;
@@ -15,6 +16,7 @@ export default function TweetModal() {
   const { ref, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
+  const { data: me } = useSession();
 
   const onSubmit = useCallback((data: FormProps) => {
     console.log(data)
@@ -25,11 +27,6 @@ export default function TweetModal() {
   const onClickClose = useCallback(() => {
     router.back();
   }, [router])
-
-  const me = {
-    id: 'zerohch0',
-    image: '/5Udwvqim.jpg'
-  };
 
   return (
     <div className={style.modalBackground}>
@@ -47,7 +44,7 @@ export default function TweetModal() {
           <div className={style.modalBody}>
             <div className={style.postUserSection}>
               <div className={style.postUserImage}>
-                <img src={me.image} alt={me.id} />
+                <img src={me.user.image} alt={me?.user.id} />
               </div>
             </div>
             <div className={style.inputDiv}>

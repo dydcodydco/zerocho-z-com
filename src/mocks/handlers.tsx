@@ -22,12 +22,7 @@ export const handlers = [
   http.post('/api/login', () => {
     console.log('----------------------------------handlers /api/login');
     return HttpResponse.json(
-      {
-        userId: 1,
-        nickname: '찜찜',
-        id: 'zzimzzim',
-        image: '/5Udwvqim.jpg'
-      },
+      User[0],
       {
         headers: {
           // http해더로 쿠키 설정하는 방법

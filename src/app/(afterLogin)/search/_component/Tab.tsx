@@ -11,15 +11,15 @@ export default function Tab() {
 
   const onClickHot = useCallback(() => {
     setCurrent('hot');
-    console.log(searchParams);
-    console.log(searchParams.get('q'));
-    router.replace(`/search?q=${searchParams.get('q')}`)
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('f');
+    router.replace(`/search?${newSearchParams.toString()}`);
   }, [router, searchParams])
   const onClickNew = useCallback(() => {
     setCurrent('new');
-    console.log(searchParams);
-    console.log(searchParams.toString());
-    router.replace(`/search?${searchParams.toString()}&f=live`)
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('f', 'live');
+    router.replace(`/search?${newSearchParams.toString()}`);
   }, [router, searchParams])
 
   return (

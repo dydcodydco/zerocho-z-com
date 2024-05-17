@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 import style from './logoutButton.module.scss';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { SessionUser } from '@/models/User';
 
 export default function LogoutButton({user}: {user?: any}) {
 	const router = useRouter();

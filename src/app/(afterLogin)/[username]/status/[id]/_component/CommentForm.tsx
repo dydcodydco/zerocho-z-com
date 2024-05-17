@@ -4,6 +4,7 @@ import {useCallback, useRef} from "react";
 import style from './commentForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 type FormProps = {
   content: string,
@@ -12,28 +13,25 @@ type FormProps = {
 
 export default function CommentForm({id}: {id: string}) {
   const queryClient = useQueryClient();
-  console.log(id, '---------------------id');
   const post = queryClient.getQueryData(['posts', id]);
   const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormProps>();
   const { ref, ...rest } = register('imageFile');
   const imageFileRef = useRef<HTMLInputElement | null>(null);
+  const { data: me } = useSession();
 
   const onClickButton = useCallback(() => {
     imageFileRef.current?.click();
   }, []);
+
   const onSubmit: SubmitHandler<FormProps> = useCallback((data) => { console.log(data); }, []);
 
-  const me = {
-    id: 'zerohch0',
-    image: '/5Udwvqim.jpg'
-  };
-
   if (!post) return null;
+  
   return (
     <form className={style.postForm} onSubmit={handleSubmit(onSubmit)}>
       <div className={style.postUserSection}>
         <div className={style.postUserImage}>
-          <img src={me.image} alt={me.id}/>
+          <img src={me?.user?.image} alt={me?.user?.id}/>
         </div>
       </div>
       <div className={style.postInputSection}>

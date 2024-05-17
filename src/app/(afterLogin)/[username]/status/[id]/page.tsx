@@ -26,8 +26,8 @@ export default async function Pasge({ params }: Props) {
           <BackButton/>
           <h3 className={style.headerTitle}>게시하기</h3>
         </div>
-        <SinglePost id={id}  />
-        <CommentForm />
+        <SinglePost id={id} />
+        <CommentForm id={id} />
         <div>
           <Comments id={id} />
         </div>

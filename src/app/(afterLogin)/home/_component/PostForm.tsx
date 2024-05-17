@@ -3,6 +3,7 @@
 import {ChangeEventHandler, FormEventHandler, useCallback, useRef, useState} from "react";
 import style from './postForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useSession } from 'next-auth/react';
 interface FormValues {
   content: string;
   imageFiles: FileList;
@@ -12,11 +13,8 @@ export default function PostForm() {
   const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
   const { ref, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-
-  const me = {
-    id: 'zerohch0',
-    image: '/5Udwvqim.jpg'
-  };
+  const { data: me } = useSession();
+  console.log(me);
 
   const onClickButton = useCallback(() => {
     inputFileRef.current?.click();
@@ -29,12 +27,11 @@ export default function PostForm() {
   // const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
   //   setContent(e.target.value);
   // }
-
   return (
     <form className={style.postForm} onSubmit={handleSubmit(onSubmit)}>
       <div className={style.postUserSection}>
         <div className={style.postUserImage}>
-          <img src={me.image} alt={me.id} />
+          <img src={me?.user?.image} alt={me?.user?.id} />
         </div>
       </div>
       <div className={style.postInputSection}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 import style from './rightSearchZone.module.scss'
@@ -8,9 +8,18 @@ import SearchForm from './SearchForm';
 
 export default function RightSearchZone() {
   const pathname = usePathname();
-
-  const onChangeAll = useCallback(() => {}, []);
-  const onChangeFollow = useCallback(() => {}, []);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const onChangeFollow = useCallback(() => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('pf', 'on');
+    router.replace(`/search?${newSearchParams.toString()}`);
+  }, [router, searchParams]);
+  const onChangeAll = useCallback(() => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('pf');
+    router.replace(`/search?${newSearchParams.toString()}`);
+  }, [router, searchParams]);
 
   if (pathname === '/explore') return null;
   if (pathname === '/search') {
