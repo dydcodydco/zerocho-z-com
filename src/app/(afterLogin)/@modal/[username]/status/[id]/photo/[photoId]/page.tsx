@@ -11,7 +11,12 @@ import { getSinglePost } from '@/app/(afterLogin)/[username]/status/[id]/_lib/ge
 import { getComments } from '@/app/(afterLogin)/[username]/status/[id]/_lib/getComments';
 import ImageZone from '@/app/(afterLogin)/@modal/[username]/status/[id]/photo/[photoId]/_component/ImageZone';
 
-export default async function Page({id}: {id: string}) {
+type Props = {
+  params: { id: string }
+}
+
+export default async function Page({ params }: Props) {
+  const { id } = params;
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({ queryKey: ['posts', id], queryFn: getSinglePost });
   await queryClient.prefetchQuery({ queryKey: ['posts', id, 'comments'], queryFn: getComments });

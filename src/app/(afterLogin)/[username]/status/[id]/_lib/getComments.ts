@@ -4,8 +4,8 @@ import { QueryFunction } from '@tanstack/react-query';
 
 export const getComments: QueryFunction<Post[], [_1: string, _2: string, _3: string]>
   = async ({ queryKey }) => {
-  const [_1, id] = queryKey;
-  const res = await fetch(`http://localhost:9090/api/posts/${id}/comments`, {
+    const [_1, id] = queryKey;
+    const res = await fetch(`http://localhost:9090/api/posts/${id}/comments`, {
     // 리액트 쿼리가 아니라 넥스트 서버에서 별도로 관리하는 캐싱
     next: {
       // 데이터를 업데이트할 때 필요한 태그만 revalidate는 관련된거 전체

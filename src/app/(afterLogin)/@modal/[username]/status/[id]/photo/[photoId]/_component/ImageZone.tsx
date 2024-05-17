@@ -6,12 +6,17 @@ import style from '@/app/(afterLogin)/@modal/[username]/status/[id]/photo/[photo
 import ActionButtons from '@/app/(afterLogin)/_component/ActionButtons';
 import {getSinglePost} from "@/app/(afterLogin)/[username]/status/[id]/_lib/getSinglePost";
 
-export default function ImageZone({id}: {id: string}) {
-  const { data: post, error } = useQuery<IPost, Object, IPost, [_1: string,  _2: string]>({
+type Props = {
+  id: string;
+}
+
+export default function ImageZone({ id }: Props) {
+  console.log('-----------------------ImageZone', id);
+  const {data: post, error} = useQuery<IPost, Object, IPost, [_1: string, _2: string]>({
     queryKey: ['posts', id],
     queryFn: getSinglePost,
-    staleTime: 60 * 1000,
-    gcTime: 300 * 100,
+    staleTime: 60 * 1000, // fresh -> stale, 5분이라는 기준
+    gcTime: 300 * 1000,
   });
 
   if (!post?.Images[0]) return null;
