@@ -11,7 +11,6 @@ type Props = {
 }
 
 export default function ImageZone({ id }: Props) {
-  console.log('-----------------------ImageZone', id);
   const {data: post, error} = useQuery<IPost, Object, IPost, [_1: string, _2: string]>({
     queryKey: ['posts', id],
     queryFn: getSinglePost,

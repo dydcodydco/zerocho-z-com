@@ -1,17 +1,18 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 // 클라이언트에서 실행
-import { getPostRecommend } from '@/app/(afterLogin)/_lib/getPostRecommends';
+import { getPostRecommends } from '@/app/(afterLogin)/_lib/getPostRecommends';
 import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/models/Post';
+import { Fragment } from 'react';
 
 
 export default function PostRecommends() {
-  const { data } = useQuery<IPost[]>({
+  const { data } = useInfiniteQuery<IPost[], Object, InfiniteData<IPost[]>, [_1: string, _2: string], number>({
     // 쿼리 키
     queryKey: ['posts', 'recommends'],
-    queryFn: getPostRecommend,
+    queryFn: getPostRecommends,
     // fresh -> stale 가는 시간
     // 60000 -> 1분동안 fresh, 즉 1분뒤에 stale로 바뀐다.
     // staleTime: infinity -> 항상 fresh
@@ -22,12 +23,19 @@ export default function PostRecommends() {
     // inactive상태일때 gcTime이 돌아간다.
     // 이는 데이터가 많으면 터질수가 있다.인액티브 데이터들 5분뒤면 사라지게 만든다.
     // 시간안에는 캐시에서 가져오고, 지나면 새로 불러온다.
-    gcTime: 300 * 100,
     // 일반적으로 staleTime을 gcTime보다 짧게 해야한다.  무조건 staleTime < gcTime!!
+    gcTime: 300 * 100,
+    // 처음 0
+    initialPageParam: 0, // 1, 2, 3, 4, 5
+    // 가장 마지막에 불러온 페이지들 lastPage에 들어있다.
+    getNextPageParam: (lastPage) => lastPage.at(-1)?.postId, // 5
+    // useInfiniteQuery는 데이터를 [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]] 이차원 배열로 관리
   })
   return (
-    data?.map((post: IPost) => (
-      <Post post={post} key={post.postId} />
+    data?.pages.map((page, i) => (
+      <Fragment key={i}>
+        {page.map((post: IPost) => <Post post={post} key={post.postId} />)}
+      </Fragment>
     ))
   )
 }

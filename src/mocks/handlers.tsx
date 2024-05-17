@@ -53,9 +53,8 @@ export const handlers = [
   }),
   http.get('/api/postRecommends', async ({ request }) => {
     console.log('----------------------------------handlers /api/postRecommends');
-    await delay(3000);
-    const url = new URL(request.url)
-    const cursor = parseInt(url.searchParams.get('cursor') as string) || 0;
+    const url = new URL(request.url);
+    const cursor = parseInt(url.searchParams.get('cursur') as string) || 0;
     return HttpResponse.json(
       [
         {

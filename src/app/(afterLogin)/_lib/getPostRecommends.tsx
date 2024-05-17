@@ -1,5 +1,6 @@
-export async function getPostRecommend() {
-  const res = await fetch('http://localhost:9090/api/postRecommends', {
+// export const getPostRecommend: QueryFunction<Post[], [_1: string, _2: string], number> = async ({queryKey, pageParam}) => {
+export async function getPostRecommends({pageParam}: {pageParam: number}) {
+  const res = await fetch(`http://localhost:9090/api/postRecommends?cursor=${pageParam}`, {
     next: {
       // 데이터를 업데이트할 때 필요한 태그만 revalidate는 관련된거 전체
       tags: ['posts', 'recommends'],
