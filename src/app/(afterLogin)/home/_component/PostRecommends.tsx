@@ -5,11 +5,11 @@ import { InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getPostRecommends } from '@/app/(afterLogin)/_lib/getPostRecommends';
 import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/models/Post';
-import { Fragment } from 'react';
-
+import { Fragment, useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 export default function PostRecommends() {
-  const { data } = useInfiniteQuery<IPost[], Object, InfiniteData<IPost[]>, [_1: string, _2: string], number>({
+  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery<IPost[], Object, InfiniteData<IPost[]>, [_1: string, _2: string], number>({
     // 쿼리 키
     queryKey: ['posts', 'recommends'],
     queryFn: getPostRecommends,
@@ -30,12 +30,35 @@ export default function PostRecommends() {
     // 가장 마지막에 불러온 페이지들 lastPage에 들어있다.
     getNextPageParam: (lastPage) => lastPage.at(-1)?.postId, // 5
     // useInfiniteQuery는 데이터를 [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]] 이차원 배열로 관리
-  })
+  });
+
+  const { ref, inView } = useInView({
+    // 문턱, 즉 ref가 보이고나서 몇 px정도에 이벤트 호출해줄껀가?  0 --> 보이자마자 호출할꺼다.
+    threshold: 0,
+    // ref가 보이고나서 몇초후에 이벤트 호출할껀가?
+    delay: 0,
+  });
+
+  useEffect(() => {
+    console.log('inView', inView);
+    console.log('isFetching', isFetching);
+    console.log('hasNextPage', hasNextPage);
+    if (inView) {
+      // 화면에 ref가 보였을때, inView가 true일때 작동하는 코드
+      // hasNextPage(다음페이지)가 존재해야 호출
+      // isFetching = 리액트쿼리가 데이터를 가져오는 순간, 이게 false일때 즉, 가져오고있지 않을때 호출해야한다.
+      !isFetching && hasNextPage && fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
+
   return (
-    data?.pages.map((page, i) => (
-      <Fragment key={i}>
-        {page.map((post: IPost) => <Post post={post} key={post.postId} />)}
-      </Fragment>
-    ))
+    <>
+      {data?.pages.map((page, i) => (
+        <Fragment key={i}>
+          {page.map((post: IPost) => <Post post={post} key={post.postId} />)}
+        </Fragment>
+      ))}
+      {hasNextPage && <div ref={ref} style={{ height: 300 }}></div>}
+    </>
   )
 }
