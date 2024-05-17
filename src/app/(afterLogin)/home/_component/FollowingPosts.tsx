@@ -1,14 +1,15 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 // 클라이언트에서 실행
 import { getFollowingPosts } from '@/app/(afterLogin)/_lib/getFollowingPosts';
 import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/models/Post';
+import Loading from '../loading';
 
 
 export default function FollowingPosts() {
-  const { data } = useQuery<IPost[]>({
+  const { data, isPending, isError } = useSuspenseQuery<IPost[]>({
     // 쿼리 키
     queryKey: ['posts', 'followings'],
     queryFn: getFollowingPosts,
@@ -25,6 +26,20 @@ export default function FollowingPosts() {
     gcTime: 300 * 100,
     // 일반적으로 staleTime을 gcTime보다 짧게 해야한다.  무조건 staleTime < gcTime!!
   })
+
+  // if (isPending) {
+  //   return (
+  //     <>
+  //       여긴 FollowingPosts
+  //       <Loading />
+  //     </>
+  //   )
+  // }
+
+  if (isError) {
+    return 'postRecommends 에러 발생'
+  }
+
   return (
     data?.map((post: IPost) => (
       <Post post={post} key={post.postId} />

@@ -1,15 +1,26 @@
 'use client';
 
-import { InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 // 클라이언트에서 실행
 import { getPostRecommends } from '@/app/(afterLogin)/_lib/getPostRecommends';
 import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/models/Post';
 import { Fragment, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import Loading from '../loading';
 
 export default function PostRecommends() {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery<IPost[], Object, InfiniteData<IPost[]>, [_1: string, _2: string], number>({
+  const { data,
+    fetchNextPage,
+    hasNextPage,
+    // 데이터를 가져오는 순간 isFetching이 true (queryFn이 호출될 때마다)
+    isFetching,
+    // 완전 처음에는 isPending이 true (데이터를 아예 안불러왔을 때)
+    isPending,
+    // isFetching이 true일 때 isLoading도 true
+    isLoading,
+    isError,
+  } = useSuspenseInfiniteQuery<IPost[], Object, InfiniteData<IPost[]>, [_1: string, _2: string], number>({
     // 쿼리 키
     queryKey: ['posts', 'recommends'],
     queryFn: getPostRecommends,
@@ -50,6 +61,19 @@ export default function PostRecommends() {
       !isFetching && hasNextPage && fetchNextPage();
     }
   }, [inView, fetchNextPage, hasNextPage]);
+
+  // if (isPending) {
+  //   return (
+  //     <>
+  //       여긴 postRecommends
+  //       <Loading />
+  //     </>
+  //   )
+  // }
+    
+  if (isError) {
+    return 'postRecommends 에러 발생'
+  }
 
   return (
     <>
