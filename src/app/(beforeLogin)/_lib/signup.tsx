@@ -44,8 +44,8 @@ const onSubmit = async (prevState: any, formData: FormData) => {
     await signIn("credentials", {
       id: formData.get('id'),
       password: formData.get('password'),
-      redirect: true,
-      callbackUrl: '/home',
+      redirect: false,
+      // callbackUrl: '/home',
     })
   } catch (error) {
     console.error(error, '------------signup error');
