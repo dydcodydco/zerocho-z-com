@@ -20,6 +20,7 @@ export default function TrendSection() {
 		enabled: !!session?.user
 	})
 
+	console.log(data, '---------------trend data');
 	if (pathname === '/explore') return null;
 	if (session?.user) {
 		return (

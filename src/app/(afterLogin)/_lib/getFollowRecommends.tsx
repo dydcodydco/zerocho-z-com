@@ -1,5 +1,5 @@
 export async function getFollowRecommends() {
-  const res = await fetch('http://localhost:9090/api/followRecommends', {
+  const res = await fetch('http://localhost:9090/api/users/followRecommends', {
     // 리액트 쿼리가 아니라 넥스트 서버에서 별도로 관리하는 캐싱
     next: {
       // 데이터를 업데이트할 때 필요한 태그만 revalidate는 관련된거 전체

@@ -51,9 +51,9 @@ export default function PostRecommends() {
   });
 
   useEffect(() => {
-    console.log('inView', inView);
-    console.log('isFetching', isFetching);
-    console.log('hasNextPage', hasNextPage);
+    // console.log('inView', inView);
+    // console.log('isFetching', isFetching);
+    // console.log('hasNextPage', hasNextPage);
     if (inView) {
       // 화면에 ref가 보였을때, inView가 true일때 작동하는 코드
       // hasNextPage(다음페이지)가 존재해야 호출
@@ -61,16 +61,18 @@ export default function PostRecommends() {
       !isFetching && hasNextPage && fetchNextPage();
     }
   }, [inView, fetchNextPage, hasNextPage]);
-
+  
   // if (isPending) {
-  //   return (
-  //     <>
-  //       여긴 postRecommends
-  //       <Loading />
-  //     </>
-  //   )
-  // }
-    
+    //   return (
+      //     <>
+      //       여긴 postRecommends
+      //       <Loading />
+      //     </>
+      //   )
+      // }
+      
+  console.log(data, '-----------------------------PostRecommends');
+
   if (isError) {
     return 'postRecommends 에러 발생'
   }
