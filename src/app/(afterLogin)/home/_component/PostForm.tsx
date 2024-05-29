@@ -4,17 +4,20 @@ import {ChangeEventHandler, FormEventHandler, useCallback, useRef, useState} fro
 import style from './postForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 interface FormValues {
   content: string;
   imageFiles: FileList;
 }
 
-export default function PostForm() {
+type Props = {
+  me: Session | null;
+}
+
+export default function PostForm({me}: Props) {
   const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
   const { ref, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const { data: me } = useSession();
-  console.log(me);
 
   const onClickButton = useCallback(() => {
     inputFileRef.current?.click();

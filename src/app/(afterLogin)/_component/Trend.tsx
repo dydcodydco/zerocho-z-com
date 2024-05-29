@@ -11,7 +11,7 @@ export default function Trend({trend}: Props) {
     <Link href={`/search?q=${trend.title}`} className={style.container}>
       <div className={style.count}>{trend.tagId}</div>
       <div className={style.title}>{trend.title}</div>
-      <div className={style.count}>{trend.count.toLocaleString()}</div>
+      <div className={style.count}>{trend.count?.toLocaleString()}</div>
     </Link>
   );
 }
