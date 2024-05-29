@@ -43,6 +43,7 @@ export const {
       },
       authorize: async (credentials) => {
         console.log('-------------------------------------------auth.ts');
+        console.log(credentials);
         const authResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/login`, {
           method: 'POST',
           headers: {

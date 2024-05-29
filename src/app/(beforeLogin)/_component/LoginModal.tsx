@@ -1,16 +1,24 @@
 'use client';
 
 import style from '@/app/(beforeLogin)/_component/login.module.scss';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 // import { signIn } from '@/auth'; // 서버환경일 때
 import { signIn } from 'next-auth/react'; // 클라이언트일 때
+import { useEffect } from 'react';
 
 type formProps = {
 	id: string, password: string,
 }
 
 export default function LoginModal() {
+	const params = useSearchParams();
+	useEffect(() => {
+		if (params.get('error') && params.get('code')) {
+			alert(params.get('code'));
+		}
+	}, [params]);
+	
 	const { register, handleSubmit, formState: { errors } } = useForm<formProps>();
 	const router = useRouter();
 	const onClickClose = () => {
@@ -24,7 +32,7 @@ export default function LoginModal() {
 			await signIn('credentials', { ...data, redirect: true, callbackUrl: '/home' });
 			// router.replace('/home');
 		} catch(error) {
-			console.error(error);
+			console.error(error, '-------------------------login modal');
 			console.log('아이디와 비밀번호가 일치히자 않습니다.');
 		}
 	};

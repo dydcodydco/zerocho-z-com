@@ -17,30 +17,38 @@ const onSubmit = async (prevState: any, formData: FormData) => {
     return { message: 'no_image' };
   }
 
+  formData.set('nickname', formData.get('name') as string);
+
   let shouldRedirect = false;
   try {
     console.log('-------------------------signup start');
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, {
       method: 'post',
       body: formData,
+      // 회원가입할때 credentials: includes 필수!!
+      // 세션 쿠키를 브라우저에 등록하기 위해서 필요하다.
       credentials: 'include', // cookie 전달 위해서
     });
     // console.log(response);
-    console.log(response.status);
+    console.log(response.status, '-------------------------signup status');
+
     if (response.status === 403) {
       return { message: 'user_exists' };
     }
+
     const user = await response.json();
     console.log(user, '-------------------------signup');
+
     shouldRedirect = true;
     // 회원가입 성공하고 로그인 시도
     await signIn("credentials", {
-      username: formData.get('id'),
+      id: formData.get('id'),
       password: formData.get('password'),
       redirect: true,
+      callbackUrl: '/home',
     })
   } catch (error) {
-    console.error(error);
+    console.error(error, '------------signup error');
     return { message: null };
   }
 
