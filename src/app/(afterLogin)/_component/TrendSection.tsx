@@ -7,10 +7,14 @@ import { useSession } from 'next-auth/react';
 import { useQuery } from '@tanstack/react-query';
 import { getTrends } from '@/app/(afterLogin)/_lib/getTrends';
 import { Hashtag } from '@/models/Hashtag';
+import { Session } from 'next-auth';
 
-export default function TrendSection() {
+type Props = {
+	session: Session | null;
+}
+
+export default function TrendSection({session}: Props) {
 	const pathname = usePathname();
-	const { data: session } = useSession();
 	const { data } = useQuery<Hashtag[]>({
 		queryKey: ['trends'],
 		queryFn: getTrends,

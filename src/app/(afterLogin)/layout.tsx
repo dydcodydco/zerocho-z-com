@@ -46,7 +46,7 @@ export default async function AfterLoginLayout({ children, modal }: Props) {
 						<main className={style.main}>{children}</main>
 						<section className={style.rightSection}>
 							<RightSearchZone />
-							<TrendSection />
+							<TrendSection session={session} />
 							<div className={style.followRecommend}>
 								<h3>팔로우 추천</h3>
 								<FollowRecommendSection />

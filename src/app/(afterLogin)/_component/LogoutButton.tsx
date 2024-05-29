@@ -12,14 +12,13 @@ type Props = {
 
 export default function LogoutButton({me}: Props) {
 	const router = useRouter();
-	const { data } = useSession();
-
 	const onLogout = useCallback(async () => {
 		await signOut({ redirect: false });
 		router.replace('/');
 	}, [router]);
 
-	if (!data?.user && me?.user) {
+	console.log(me, '-------------logout button me');
+	if (!me?.user) {
 		return null;
 	}
 
