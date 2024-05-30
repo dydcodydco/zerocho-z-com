@@ -3,8 +3,8 @@
 import {ChangeEventHandler, FormEventHandler, useCallback, useRef, useState} from "react";
 import style from './postForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
+import ReactTextareaAutosize from 'react-textarea-autosize';
 interface FormValues {
   content: string;
   imageFiles: FileList;
@@ -16,20 +16,59 @@ type Props = {
 
 export default function PostForm({me}: Props) {
   const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
-  const { ref, ...rest } = register('imageFiles');
+  const { ref, onChange, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<Array<{dataUrl: string, file: File} | null>>([]);
+  const [content, setContent] = useState([]);
 
   const onClickButton = useCallback(() => {
     inputFileRef.current?.click();
   }, []);
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const onRemoveImage = useCallback((index: number) => () => {
+    setPreview(prevPreview => {
+        const prev = [...prevPreview];
+        prev[index] = null;
+        return prev;
+      }
+    );
+  }, [])
 
-  // const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-  //   setContent(e.target.value);
-  // }
+  const onUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
+    e.preventDefault();
+    if (e.target.files) {
+      console.log('e.target.files', e.target.files);
+      console.log(Array.from(e.target.files));
+      Array.from(e.target.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setPreview(prevPreview => {
+            const prev = [...prevPreview];
+            prev[index] = {dataUrl: reader.result as string, file};
+            return prev;
+          })
+        }
+        reader.readAsDataURL(file); // 결과값 무조건 string
+      })
+    }
+  }
+
+  const onSubmit: SubmitHandler<FormValues> = useCallback( async (data) => {
+    console.log(data);
+    const formData = new FormData;
+    formData.append('content', data.content);
+    preview.forEach(d => {
+      d && formData.append('image', d.file);
+    });
+    console.log(formData)
+    return;
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+      method: 'post',
+      credentials: 'include',
+      body: formData,
+    })
+  }, [preview]);
+
   return (
     <form className={style.postForm} onSubmit={handleSubmit(onSubmit)}>
       <div className={style.postUserSection}>
@@ -38,10 +77,21 @@ export default function PostForm({me}: Props) {
         </div>
       </div>
       <div className={style.postInputSection}>
-        <textarea
+        <ReactTextareaAutosize
           placeholder="무슨 일이 일어나고 있나요?"
-          {...register('content', { required: '내용을 입력해주세요.', minLength: { value: 3, message: '최소 3글자' } })} />
+          {...register('content', { required: '내용을 입력해주세요.', minLength: { value: 3, message: '최소 3글자' } })}
+        />
         {errors.content && <p>{errors.content.message}</p>}
+
+        <div style={{display: 'flex', flexWrap: 'wrap'}}>
+          {preview.map((v, index) => (
+            v && (
+              <div style={{maxWidth: '33%'}} key={index} onClick={onRemoveImage(index)}>
+                <img style={{ display: 'block', maxWidth: '100%' }} alt='img' src={v.dataUrl} />
+              </div>)
+          ))}
+        </div>
+
         <div className={style.postButtonSection}>
           <div className={style.footerButtons}>
             <div className={style.footerButtonLeft}>
@@ -52,6 +102,7 @@ export default function PostForm({me}: Props) {
                   ref(e);
                   inputFileRef.current = e;
                 }}
+                onChange={onUpload}
               />
               <button className={style.uploadButton} type="button" onClick={onClickButton}>
                 <svg width={24} viewBox="0 0 24 24" aria-hidden="true">

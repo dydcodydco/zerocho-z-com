@@ -13,7 +13,7 @@
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  border: 1px solid #000
+  border: 1px solid #000;
 }
 
 .postForm {
@@ -39,9 +39,10 @@
   width: 100%;
   border: none;
   padding: 12px 0;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 24px;
   outline: none;
+  font-family: 'Malgun Gothic', sans-serif;
 }
 .postForm textarea::placeholder {
   font-family: Malgun Gothic;
