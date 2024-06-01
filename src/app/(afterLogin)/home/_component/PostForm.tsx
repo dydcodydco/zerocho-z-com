@@ -5,7 +5,7 @@ import style from './postForm.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Session } from 'next-auth';
 import ReactTextareaAutosize from 'react-textarea-autosize';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Post } from '@/models/Post';
 interface FormValues {
   content: string;
@@ -17,11 +17,61 @@ type Props = {
 }
 
 export default function PostForm({me}: Props) {
-  const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
+  const { register, handleSubmit, reset, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
   const { ref, onChange, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<Array<{ dataUrl: string, file: File } | null>>([]);
   const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const formData = new FormData;
+      formData.append('content', data.content);
+      preview.forEach(d => {
+        d && formData.append('images', d.file);
+      });
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: 'post',
+        credentials: 'include',
+        body: formData,
+      });
+    },
+    onMutate: () => {
+      return 123;
+    },
+    // context = onMutate에서 리턴한 값
+    // mutateFn의 매개변수
+    onSuccess: async(response, variable, context) => {
+      setPreview([]);
+      reset();
+      const newPost = await response.json();
+      if (queryClient.getQueryData(['posts', 'recommends'])) {
+        queryClient.setQueryData(['posts', 'recommends'], (prevData: { pages: Post[][] }) => {
+          const shallow = {
+            ...prevData,
+            pages: [...prevData.pages]
+          };
+          // shallow.pages[0].unshift(newPost);
+          shallow.pages[0] = [newPost, ...shallow.pages[0]];
+          return shallow;
+        });
+      }
+      if (queryClient.getQueryData(['posts', 'followings'])) {
+        queryClient.setQueryData(['posts', 'followings'], (prevData: { pages: Post[][] }) => {
+          const shallow = {
+            ...prevData,
+            pages: [...prevData.pages]
+          };
+          // shallow.pages[0].unshift(newPost);
+          shallow.pages[0] = [newPost, ...shallow.pages[0]];
+          return shallow;
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('게시물 업로드 중 에러 발생', error);
+    }
+  });
 
   const onClickButton = useCallback(() => {
     inputFileRef.current?.click();
@@ -36,6 +86,7 @@ export default function PostForm({me}: Props) {
     );
   }, [])
 
+  // 업로드한 이미지 미리보기
   const onUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault();
     if (e.target.files) {
@@ -55,49 +106,9 @@ export default function PostForm({me}: Props) {
     }
   }
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback(async (data) => {
-    console.log(data);
-    const formData = new FormData;
-    formData.append('content', data.content);
-    preview.forEach(d => {
-      d && formData.append('images', d.file);
-    });
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
-        method: 'post',
-        credentials: 'include',
-        body: formData,
-      });
-      if (response.status === 201) {
-        setPreview([]);
-        const newPost = await response.json();
-        if (queryClient.getQueryData(['posts', 'recommends'])) {
-          queryClient.setQueryData(['posts', 'recommends'], (prevData: { pages: Post[][] }) => {
-            const shallow = {
-              ...prevData,
-              pages: [...prevData.pages]
-            };
-            shallow.pages[0].unshift(newPost);
-            shallow.pages[0] = [newPost, ...shallow.pages[0]];
-            return shallow;
-          });
-        }
-        if (queryClient.getQueryData(['posts', 'followings'])) { 
-          queryClient.setQueryData(['posts', 'followings'], (prevData: {pages: Post[][]}) => {
-            const shallow = {
-              ...prevData,
-              pages: [...prevData.pages]
-            };
-            shallow.pages[0].unshift(newPost);
-            shallow.pages[0] = [newPost, ...shallow.pages[0]];
-            return shallow;
-          })
-        }
-      }
-    } catch(error) {
-      console.error('게시물 업로드 중 에러 발생', error);
-    }
-  }, [preview, queryClient]);
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    mutation.mutate(data);
+  };
 
   return (
     <form className={style.postForm} onSubmit={handleSubmit(onSubmit)}>
