@@ -10,6 +10,7 @@ type Props = {
 }
 
 export default function SearchResult({ searchParams }: Props) {
+  console.log(searchParams, '----------SearchResult');
   const { data } = useQuery<IPost[], Object, IPost[], [_1: string, _2: string, Props['searchParams']]>({
     // 4번째 자리의 [_1: string, _2: string, Props['searchParams']]이게 queryKey에 대한 타입
     // 넥스트 서버의 태그에는 객체가 들어갈 수 없어서, searchParams.q, 리액트 키에는 객체들어갈 수 있어서 searchParams

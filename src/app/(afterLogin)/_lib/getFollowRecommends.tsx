@@ -7,6 +7,7 @@ export async function getFollowRecommends() {
     },
     // 캐싱 안하는 값, 너무 캐싱이 강하면 데이터를 새로 불러오지 못한다.
     cache: 'no-store',
+    credentials: 'include',
   })
 
   if (!res.ok) {

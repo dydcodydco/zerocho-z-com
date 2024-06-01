@@ -31,7 +31,7 @@ export default function TrendSection({session}: Props) {
 			<div className={style.trendBg}>
 				<div className={style.trend}>
 					<h3>나를 위한 트렌드</h3>
-					{data?.map((trend: any) => <Trend key={trend.tagId} trend={trend} />)}
+					{data?.map((trend: any, i: number) => <Trend key={trend.i} trend={trend} />)}
 				</div>
 			</div>
 		);
