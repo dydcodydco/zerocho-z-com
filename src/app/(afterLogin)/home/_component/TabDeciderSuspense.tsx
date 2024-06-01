@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import TabDecider from './TabDecider';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 // 서버에서 실행
-import { getPostRecommends } from '@/app/(afterLogin)/_lib/getPostRecommends';
+import { getPostRecommends } from '@/app/(afterLogin)/home/_lib/getPostRecommends';
 
 export default async function TabDeciderSuspense() {
   // 서버에서 받은 데이터를 reqct-query가 물려받는다.

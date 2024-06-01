@@ -2,7 +2,7 @@
 
 import { InfiniteData, useInfiniteQuery, useQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 // 클라이언트에서 실행
-import { getPostRecommends } from '@/app/(afterLogin)/_lib/getPostRecommends';
+import { getPostRecommends } from '@/app/(afterLogin)/home/_lib/getPostRecommends';
 import Post from '@/app/(afterLogin)/_component/Post';
 import { Post as IPost } from '@/models/Post';
 import { Fragment, useEffect } from 'react';
@@ -84,7 +84,7 @@ export default function PostRecommends() {
           {page.map((post: IPost) => <Post post={post} key={post.postId} />)}
         </Fragment>
       ))}
-      {hasNextPage && <div ref={ref} style={{ height: 300 }}></div>}
+      {hasNextPage && <div ref={ref} style={{ height: 50 }}></div>}
     </>
   )
 }
