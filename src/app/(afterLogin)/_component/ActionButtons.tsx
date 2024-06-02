@@ -21,6 +21,7 @@ export default function ActionButtons({ white, post }: Props) {
   const liked = !!post.Hearts?.find(d => d.userId === session?.user?.email);
   const { postId } = post;
 
+  console.log(post, '------------------action button');
   const heart = useMutation({
     mutationFn: () => {
       return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
