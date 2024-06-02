@@ -5,10 +5,20 @@ import Tab from '@/app/(afterLogin)/search/_component/Tab';
 import SearchResult from '@/app/(afterLogin)/search/_component/SearchResult';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 import { getSearchResult } from './_lib/getSearchResult';
+import { Metadata } from 'next';
+import { title } from 'process';
 
 type Props = {
   searchParams: { q: string, f?: string, pf?: string };
 }
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  return {
+    title: `${searchParams.q} - 검색 / Z`,
+    description: `${searchParams.q} - 검색 / Z`,
+  }
+}
+
 export default async function Search({ searchParams }: Props) {
   // 서버에서 받은 데이터를 reqct-query가 물려받는다.
   const queryClient = new QueryClient();

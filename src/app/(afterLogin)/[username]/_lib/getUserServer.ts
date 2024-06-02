@@ -3,7 +3,7 @@ import { User } from '@/models/User';
 import { QueryFunction } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 
-export const getUserServer: QueryFunction<User, [_1: string, string]> = async ({ queryKey }) => {
+export const getUserServer = async ({ queryKey }: { queryKey: [string, string] }) => {
   const [_1, username] = queryKey;
   const res = await fetch(`http://localhost:9090/api/users/${username}`, {
     // 리액트 쿼리가 아니라 넥스트 서버에서 별도로 관리하는 캐싱

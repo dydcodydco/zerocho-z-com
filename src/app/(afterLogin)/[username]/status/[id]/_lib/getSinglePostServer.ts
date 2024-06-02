@@ -1,8 +1,6 @@
+import { cookies } from 'next/headers';
 
-import { Post } from '@/models/Post';
-import { QueryFunction } from '@tanstack/react-query';
-
-export const getSinglePost = async ({ queryKey }: { queryKey: [string, string] }) => {
+export const getSinglePostServer = async ({ queryKey }: { queryKey: [string, string] }) => {
   const [_1, id] = queryKey;
   const res = await fetch(`http://localhost:9090/api/posts/${id}`, {
     // 리액트 쿼리가 아니라 넥스트 서버에서 별도로 관리하는 캐싱
@@ -13,6 +11,7 @@ export const getSinglePost = async ({ queryKey }: { queryKey: [string, string] }
     // 캐싱 안하는 값, 너무 캐싱이 강하면 데이터를 새로 불러오지 못한다.
     // cache: 'no-store',
     credentials: 'include',
+    headers: {Cookie: cookies().toString()}
   })
 
   if (!res.ok) {
