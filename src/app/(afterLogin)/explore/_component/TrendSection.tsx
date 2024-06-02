@@ -13,5 +13,5 @@ export default function TrendSection() {
 		gcTime: 300 * 100,
 	})
 
-  return data?.map((trend: any) => <Trend key={trend.tagId} trend={trend} />);
+  return data?.map((trend: any, i: number) => <Trend key={i} trend={trend} />);
 }
