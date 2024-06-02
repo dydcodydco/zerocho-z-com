@@ -12,6 +12,7 @@ export default function SinglePost({id, noImage}: {id: string, noImage?: boolean
     staleTime: 60 * 1000,
     gcTime: 300 * 100,
   });
+  console.log(post, '--------------------------single post');
   if (error) {
     return (
       <div style={{

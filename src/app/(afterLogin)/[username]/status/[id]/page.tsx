@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default async function Pasge({ params }: Props) {
-  console.log('----------------------------- ', params);
+  console.log('----------------------------- single post params', params);
   const { id } = params;
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({ queryKey: ['posts', id], queryFn: getSinglePost });

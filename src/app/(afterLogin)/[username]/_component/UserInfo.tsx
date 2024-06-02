@@ -13,6 +13,7 @@ export default function UserInfo({ username }: { username: string }) {
     staleTime: 60 * 1000,
     gcTime: 300 * 100,
   })
+  console.log(user, '--------------userInfo');
 
   // console.log(error);
   // console.dir(error);

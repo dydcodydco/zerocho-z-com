@@ -1,27 +1,210 @@
 'use client';
 
-import { useCallback } from 'react';
+import { MouseEventHandler, useCallback } from 'react';
 import style from './post.module.scss';
 import cx from 'classnames';
+import { InfiniteData, QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Post } from '@/models/Post';
+import { useSession } from 'next-auth/react';
+import { produce } from 'immer';
 
 type Props = {
-  white?: boolean
+  white?: boolean,
+  post: Post,
 }
 
-export default function ActionButtons({white}: Props) {
-  const commented = false;
-  const reposted = false;
-  const liked = false;
+export default function ActionButtons({ white, post }: Props) {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const commented = !!post.Comments?.find(d => d.userId === session?.user?.email);
+  const reposted = !!post.Reposts?.find(d => d.userId === session?.user?.email);
+  const liked = !!post.Hearts?.find(d => d.userId === session?.user?.email);
+  const { postId } = post;
 
-  const onClickComment = useCallback(() => {
-    
+  const heart = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
+        method: 'post',
+        credentials: 'include',
+      })
+    },
+    onMutate() {
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Hearts = [{ userId: session?.user?.email as string }];
+                draft.pages[pageIndex][index]._count.Hearts += 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: [...value.Hearts, { userId: session?.user?.email as string }],
+                _count: {
+                  ...value._count,
+                  Hearts: value._count.Hearts + 1,
+                }
+              }
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Hearts = draft.pages[pageIndex][index].Hearts.filter(d => d.userId !== session?.user?.email);
+                draft.pages[pageIndex][index]._count.Hearts -= 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: value.Hearts.filter(d => d.userId !== session?.user?.email),
+                _count: {
+                  ...value._count,
+                  Hearts: value._count.Hearts - 1,
+                }
+              }
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    },
+    onSettled() {
+      queryClient.invalidateQueries({
+        queryKey: ['posts']
+      })
+    }
+  });
+
+  const unheart = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
+        method: 'delete',
+        credentials: 'include',
+      })
+    },
+    onMutate() {
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Hearts = draft.pages[pageIndex][index].Hearts.filter(d => d.userId !== session?.user?.email);
+                draft.pages[pageIndex][index]._count.Hearts -= 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: value.Hearts.filter(d => d.userId !== session?.user?.email),
+                _count: {
+                  ...value._count,
+                  Hearts: value._count.Hearts - 1,
+                }
+              }
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    },
+    onError() {
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Hearts = [{ userId: session?.user?.email as string }];
+                draft.pages[pageIndex][index]._count.Hearts += 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = {
+                ...value,
+                Hearts: [...value.Hearts, { userId: session?.user?.email as string }],
+                _count: {
+                  ...value._count,
+                  Hearts: value._count.Hearts + 1,
+                }
+              }
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    },
+    onSettled() {
+      queryClient.invalidateQueries({
+        queryKey: ['posts']
+      })
+    }
+  });
+
+  const onClickComment: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
+    e.stopPropagation();
+    console.log(e);
   }, []);
-  const onClickPepost = useCallback(() => {
-    
+  const onClickPepost: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
+    e.stopPropagation();
+    console.log(e);
   }, []);
-  const onClickHeart = useCallback(() => {
-    
-  }, []);
+  const onClickHeart: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
+    e.stopPropagation();
+    if (liked) {
+      unheart.mutate();
+    } else {
+      heart.mutate();
+    }
+  }, [heart, unheart, liked]);
   // console.log(white);
   return (
     <div className={style.actionButtons}>
@@ -34,7 +217,7 @@ export default function ActionButtons({white}: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{ 0 || ''}</div>
+        <div className={style.count}>{post._count.Comments}</div>
       </div>
       <div className={cx(style.repostButton, reposted && style.reposted, white && style.white)}>
         <button onClick={onClickPepost}>
@@ -45,7 +228,7 @@ export default function ActionButtons({white}: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{ 1 || ''}</div>
+        <div className={style.count}>{post._count.Reposts}</div>
       </div>
       <div className={cx([style.heartButton, liked && style.liked, white && style.white])}>
         <button onClick={onClickHeart}>
@@ -56,7 +239,7 @@ export default function ActionButtons({white}: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{ 1 || ''}</div>
+        <div className={style.count}>{post._count.Hearts}</div>
       </div>
     </div>
   )
