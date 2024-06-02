@@ -145,7 +145,7 @@ export default function FollowRecommend({ user }: { user: User }) {
         <div className={style.count}>@{user.id}</div>
       </div>
       <div className={cx(style.followButtonSection, followed && style.followed)}>
-        <button onClick={onFollow}>{followed ? '팔로잉' : '팔로우'}</button>
+        <button onClick={onFollow}>{followed ? '팔로잉' : '팔로우'} {user._count.Followers}</button>
       </div>
     </Link>
   )

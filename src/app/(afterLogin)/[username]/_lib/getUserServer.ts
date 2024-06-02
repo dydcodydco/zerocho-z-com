@@ -3,7 +3,7 @@ import { User } from '@/models/User';
 import { QueryFunction } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 
-export const getUser: QueryFunction<User, [_1: string, string]> = async ({ queryKey }) => {
+export const getUserServer: QueryFunction<User, [_1: string, string]> = async ({ queryKey }) => {
   const [_1, username] = queryKey;
   const res = await fetch(`http://localhost:9090/api/users/${username}`, {
     // 리액트 쿼리가 아니라 넥스트 서버에서 별도로 관리하는 캐싱
@@ -17,7 +17,7 @@ export const getUser: QueryFunction<User, [_1: string, string]> = async ({ query
     cache: 'no-store',
     // 데이터를 가져오는 함수가 서버, 클라이언트 컴포넌트 모두에서 쓰이면 문제가 있다.
     // 서버에서 쓰이면 쿠키 못 가져오고, headers로 쓰자니 에러 발생한다.
-    // headers: {Cookie: cookies().toString()}, // 클라이언트 컴포넌트에선 못 쓴다.
+    headers: {Cookie: cookies().toString()}, // 클라이언트 컴포넌트에선 못 쓴다.
     credentials: 'include',
   })
 

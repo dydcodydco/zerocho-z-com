@@ -9,15 +9,15 @@ import cx from 'classnames';
 import { useSession } from 'next-auth/react';
 import { MouseEventHandler, useCallback } from 'react';
 import { produce } from 'immer';
+import { Session } from 'next-auth';
 
-export default function UserInfo({ username }: { username: string }) {
+export default function UserInfo({ username, session }: { username: string, session: Session | null }) {
   const { data: user, error, isLoading } = useQuery<User, Object, User, [_1: string, string]>({
     queryKey: ['users', username],
     queryFn: getUser,
     staleTime: 60 * 1000,
     gcTime: 300 * 100,
   });
-  const { data: session } = useSession();
   const followed = !!user?.Followers?.find((v) => v.id === session?.user?.email);
   const queryClient = useQueryClient();
   const follow = useMutation({
