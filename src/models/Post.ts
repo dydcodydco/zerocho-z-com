@@ -18,5 +18,7 @@ export interface Post {
     Hearts: number,
     Reposts: number,
     Comments: number
-  }
+  },
+  Original?: Post; // 있으면 재개시 글
+  Parent?: Post; // 있으면 답글
 }

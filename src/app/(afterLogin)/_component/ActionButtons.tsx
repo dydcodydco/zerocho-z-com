@@ -21,7 +21,6 @@ export default function ActionButtons({ white, post }: Props) {
   const liked = !!post.Hearts?.find(d => d.userId === session?.user?.email);
   const { postId } = post;
 
-  console.log(post, '------------------action button');
   const heart = useMutation({
     mutationFn: () => {
       return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
@@ -192,12 +191,29 @@ export default function ActionButtons({ white, post }: Props) {
 
   const onClickComment: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     e.stopPropagation();
-    console.log(e);
-  }, []);
-  const onClickPepost: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
+    const formData = new FormData();
+    formData.append('content', '답글 테스트');
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/comments`, {
+      method: 'post',
+      credentials: 'include',
+      body: formData,
+    })
+  }, [post.postId]);
+
+  const onClickRepost: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     e.stopPropagation();
-    console.log(e);
-  }, []);
+    if (!reposted) {
+      const formData = new FormData();
+      formData.append('content', '재게시 테스트');
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/reposts`, {
+        method: 'post',
+        credentials: 'include',
+        body: formData
+      })
+    }
+  }, [reposted, post.postId]);
+
+
   const onClickHeart: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     e.stopPropagation();
     if (liked) {
@@ -221,7 +237,7 @@ export default function ActionButtons({ white, post }: Props) {
         <div className={style.count}>{post._count.Comments}</div>
       </div>
       <div className={cx(style.repostButton, reposted && style.reposted, white && style.white)}>
-        <button onClick={onClickPepost}>
+        <button onClick={onClickRepost}>
           <svg width={24} viewBox="0 0 24 24" aria-hidden="true">
             <g>
               <path

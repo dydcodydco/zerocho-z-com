@@ -3,27 +3,24 @@
 import { useRouter } from 'next/navigation';
 import { ReactNode, useCallback } from 'react';
 import style from './post.module.scss';
+import { Post } from '@/models/Post';
 
 type Props = {
   children: ReactNode,
-  post: {
-    postId: number,
-    User: {
-      id: string,
-      nickname: string,
-      image: string,
-    },
-    content: string,
-    createdAt: Date,
-    Images: any[], // 나중에 제대로 바꿀것
-  },
+  post: Post
 }
 
 export default function PostArticle({ children, post }: Props) {
   const router = useRouter();
+  let target = post;
+  if (post.Original) {
+    target = post.Original;
+  }
+
   const onConClick = useCallback(() => {
-    router.push(`/${post.User.id}/status/${post.postId}`)
-  }, [router, post])
+    router.push(`/${target.User.id}/status/${target.postId}`)
+  }, [router, target]);
+
   return (
     <article className={style.post} onClick={onConClick}>
       {children}
