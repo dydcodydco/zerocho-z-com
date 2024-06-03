@@ -7,6 +7,8 @@ import { InfiniteData, QueryClient, useMutation, useQueryClient } from '@tanstac
 import { Post } from '@/models/Post';
 import { useSession } from 'next-auth/react';
 import { produce } from 'immer';
+import { useRouter } from 'next/navigation';
+import { useModalStore } from '@/store/modal';
 
 type Props = {
   white?: boolean,
@@ -16,6 +18,9 @@ type Props = {
 export default function ActionButtons({ white, post }: Props) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
+  const router = useRouter();
+  const modalStore = useModalStore();
+  
   const commented = !!post.Comments?.find(d => d.userId === session?.user?.email);
   const reposted = !!post.Reposts?.find(d => d.userId === session?.user?.email);
   const liked = !!post.Hearts?.find(d => d.userId === session?.user?.email);
@@ -189,29 +194,116 @@ export default function ActionButtons({ white, post }: Props) {
     }
   });
 
+  const repost = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/reposts`, {
+        method: 'post',
+        credentials: 'include',
+      })
+    },
+    async onSuccess(response) {
+      const data = await response.json();
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Reposts = [{ userId: session?.user?.email as string }];
+                draft.pages[pageIndex][index]._count.Reposts += 1;
+                draft.pages[pageIndex].unshift(data);
+              })
+              console.log(data);
+              console.log(reposted, '----------reposted');
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = produce(value, draft => {
+                draft.Reposts = [{ userId: session?.user?.email as string }];
+                draft._count.Reposts = draft._count.Reposts + 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    }
+  });
+
+  const deleteRepost = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/reposts`, {
+        method: 'delete',
+        credentials: 'include',
+      })
+    },
+    onSuccess() {
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      console.log('queryKey', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            const obj = value.pages.flat().find(d => d.postId === postId);
+            const repost = value.pages.flat().find((v) => v.Original?.postId === postId && v.User.id === session?.user?.email);
+            if (obj) { // 존재는 하는지?
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Reposts = draft.pages[pageIndex][index].Reposts.filter(d => d.userId !== session?.user?.email);
+                draft.pages[pageIndex][index]._count.Reposts -= 1;
+                draft.pages = draft.pages.map((page) => {
+                  return page.filter((v) => v.postId !== repost?.postId);
+                });
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = produce(value, draft => {
+                draft.Reposts = [];
+                draft._count.Reposts = draft._count.Reposts - 1;
+              })
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
+    }
+  });
+
   const onClickComment: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     e.stopPropagation();
-    const formData = new FormData();
-    formData.append('content', '답글 테스트');
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/comments`, {
-      method: 'post',
-      credentials: 'include',
-      body: formData,
-    })
-  }, [post.postId]);
+    modalStore.setMode('comment');
+    modalStore.setData(post);
+    router.push(`/compose/tweet`);
+    // const formData = new FormData();
+    // formData.append('content', '답글 테스트');
+    // fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/comments`, {
+    //   method: 'post',
+    //   credentials: 'include',
+    //   body: formData,
+    // })
+  }, [router, modalStore, post]);
 
   const onClickRepost: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     e.stopPropagation();
-    if (!reposted) {
-      const formData = new FormData();
-      formData.append('content', '재게시 테스트');
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${post.postId}/reposts`, {
-        method: 'post',
-        credentials: 'include',
-        body: formData
-      })
+    if (reposted) {
+      deleteRepost.mutate();
+    } else {
+      repost.mutate();
     }
-  }, [reposted, post.postId]);
+  }, [reposted, deleteRepost, repost]);
 
 
   const onClickHeart: MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
@@ -234,7 +326,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post._count.Comments}</div>
+        <div className={style.count}>{post._count?.Comments}</div>
       </div>
       <div className={cx(style.repostButton, reposted && style.reposted, white && style.white)}>
         <button onClick={onClickRepost}>
@@ -245,7 +337,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post._count.Reposts}</div>
+        <div className={style.count}>{post._count?.Reposts}</div>
       </div>
       <div className={cx([style.heartButton, liked && style.liked, white && style.white])}>
         <button onClick={onClickHeart}>
@@ -256,7 +348,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{post._count.Hearts}</div>
+        <div className={style.count}>{post._count?.Hearts}</div>
       </div>
     </div>
   )

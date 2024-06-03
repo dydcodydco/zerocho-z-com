@@ -1,32 +1,191 @@
 "use client";
 
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import style from './modal.module.scss';
-import { useCallback, useRef, useState } from "react";
+import { ChangeEventHandler, useCallback, useRef, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import ReactTextareaAutosize from 'react-textarea-autosize';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Post } from '@/models/Post';
+import { produce } from 'immer';
+import { useModalStore } from '@/store/modal';
+import { shallow } from 'zustand/shallow';
+import Link from 'next/link';
 
-type FormProps = {
+type FormValues = {
   content: string;
   imageFiles: FileList;
 }
 
 export default function TweetModal() {
-  const { register, handleSubmit, formState: { errors, isValid, isDirty } } = useForm<FormProps>();
-  const { ref, ...rest } = register('imageFiles');
+  const { register, handleSubmit, reset, formState: { errors, isValid, isDirty } } = useForm<FormValues>();
+  const { ref, onChange, ...rest } = register('imageFiles');
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { data: me } = useSession();
+  const [preview, setPreview] = useState<Array<{ dataUrl: string, file: File } | null>>([]);
+  const queryClient = useQueryClient();
+  const modalStore = useModalStore();
+  const parent = modalStore.data;
+  const { data: session } = useSession();
 
-  const onSubmit = useCallback((data: FormProps) => {
-    console.log(data)
-  }, [])
+  const mutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const formData = new FormData;
+      formData.append('content', data.content);
+      preview.forEach(d => {
+        d && formData.append('images', d.file);
+      });
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: 'post',
+        credentials: 'include',
+        body: formData,
+      });
+    },
+    onMutate: () => {
+      return 123;
+    },
+    // context = onMutate에서 리턴한 값
+    // mutateFn의 매개변수
+    onSuccess: async (response, variable, context) => {
+      setPreview([]);
+      reset();
+      const newPost = await response.json();
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          console.log(queryKey[0]);
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            console.log('array', value);
+            const obj = value.pages.flat().find(v => v.postId === parent?.postId);
+            if (obj) {
+              const pageIndex = value.pages.findIndex(page => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex(d => d.postId === parent?.postId);
+              const shallow = produce(value, draft => {
+                draft.pages[0].unshift(newPost);
+              });
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        } 
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['trends']
+      });
+    },
+    onError: (error) => {
+      console.error('게시물 업로드 중 에러 발생', error);
+    },
+    onSettled() {
+      router.back();
+    }
+  });
+
+  const comment = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const formData = new FormData;
+      formData.append('content', data.content);
+      preview.forEach(d => {
+        d && formData.append('images', d.file);
+      });
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${parent?.postId}/comments`, {
+        method: 'post',
+        credentials: 'include',
+        body: formData,
+      });
+    },
+    onSuccess: async(response, variable, context) => {
+      setPreview([]);
+      reset();
+      const newPost = await response.json();
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          console.log(queryKey[0]);
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            console.log('array', value);
+            const obj = value.pages.flat().find(v => v.postId === parent?.postId);
+            if (obj) {
+              const pageIndex = value.pages.findIndex((page) => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex((v) => v.postId === parent?.postId);
+              const shallow = produce(value, draft => {
+                draft.pages[pageIndex][index].Comments = [{ userId: session?.user?.email as string }];
+                draft.pages[pageIndex][index]._count.Comments += 1;
+                draft.pages[0].unshift(newPost);
+              });
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            const shallow = produce(value, (draft) => {
+              draft.Comments = [{ userId: session?.user?.email as string }];
+              draft._count.Comments += 1;
+            });
+            queryClient.setQueryData(queryKey, shallow);
+          }
+        }
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['trends']
+      });
+    },
+    onError: (error) => {
+      console.error('게시물 댓글 업로드 중 에러 발생', error);
+    },
+    onSettled() {
+      modalStore.reset();
+      router.back();
+    }
+  })
+
   const onClickButton = useCallback(() => {
     inputFileRef.current?.click();
+  }, []);
+
+  const onRemoveImage = useCallback((index: number) => () => {
+    setPreview(prevPreview => {
+        const prev = [...prevPreview];
+        prev[index] = null;
+        return prev;
+      }
+    );
   }, [])
+
+  // 업로드한 이미지 미리보기
+  const onUpload: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
+    e.preventDefault();
+    if (e.target.files) {
+      console.log('e.target.files', e.target.files);
+      console.log(Array.from(e.target.files));
+      Array.from(e.target.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setPreview(prevPreview => {
+            const prev = [...prevPreview];
+            prev[index] = {dataUrl: reader.result as string, file};
+            return prev;
+          })
+        }
+        reader.readAsDataURL(file); // 결과값 무조건 string
+      })
+    }
+  }, [])
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    if (modalStore.mode === 'new') {
+      mutation.mutate(data);
+    } else {
+      comment.mutate(data);
+    }
+  };
+
   const onClickClose = useCallback(() => {
     router.back();
-  }, [router])
+  }, [router]);
 
   return (
     <div className={style.modalBackground}>
@@ -41,6 +200,24 @@ export default function TweetModal() {
           </svg>
         </button>
         <form className={style.modalForm} onSubmit={handleSubmit(onSubmit)}>
+
+        {modalStore.mode === 'comment' && parent && (
+            <div className={style.modalOriginal}>
+              <div className={style.postUserSection}>
+                <div className={style.postUserImage}>
+                  <img src={parent.User.image} alt={parent.User.id}/>
+                </div>
+              </div>
+              <div>
+                {parent.content}
+                <div>
+                  <Link href={`/${parent.User.id}`} style={{color: 'rgb(29, 155, 240)'}}>@{parent.User.id}</Link> 님에게
+                  보내는 답글
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className={style.modalBody}>
             <div className={style.postUserSection}>
               <div className={style.postUserImage}>
@@ -48,12 +225,21 @@ export default function TweetModal() {
               </div>
             </div>
             <div className={style.inputDiv}>
-              <textarea
+              <ReactTextareaAutosize
                 className={style.input}
-                placeholder="무슨 일이 일어나고 있나요?"
+                placeholder={modalStore.mode === 'comment' ? '답글 게시하기' : '무슨 일이 일어나고 있나요?'}
                 {...register('content', {required: '내용을 입력해주세요.'})}
               />
-              {errors.content && <p>{ errors.content.message}</p>}
+              {errors.content && <p>{errors.content.message}</p>}
+              
+              <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                {preview.map((v, index) => (
+                  v && (
+                    <div style={{maxWidth: '33%'}} key={index} onClick={onRemoveImage(index)}>
+                      <img style={{ display: 'block', maxWidth: '100%' }} alt='img' src={v.dataUrl} />
+                    </div>)
+                ))}
+              </div>
             </div>
           </div>
           <div className={style.modalFooter}>
@@ -69,6 +255,7 @@ export default function TweetModal() {
                     ref(e);
                     inputFileRef.current = e;
                   }}
+                  onChange={onUpload}
                 />
                 <button className={style.uploadButton} type="button" onClick={onClickButton}>
                   <svg width={24} viewBox="0 0 24 24" aria-hidden="true">
